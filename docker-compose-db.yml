@@ -3,6 +3,7 @@ services:
   aai.hbase.simpledemo.onap.org:
     image: cassandra:2.1
     hostname: aai.hbase.simpledemo.onap.org
+    privileged: true
     ports:
       - 7000:7000
       - 7001:7001
@@ -11,7 +12,7 @@ services:
       - 9160:9160
     network_mode: "host"
     environment:
-      - CASSANDRA_SEEDS=aai.hbase.simpledemo.onap.org
+      - CASSANDRA_SEEDS=127.0.0.1
       - CASSANDRA_DC=Heat
       - CASSANDRA_RACK=Rack1
       - CASSANDRA_AUTO_BOOTSTRAP=true
@@ -24,12 +25,14 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.1.2
     hostname: aai.elasticsearch.simpledemo.openecomp.org
     container_name: elasticsearch
+    privileged: true
     ports:
       - "9200:9200"
     volumes:
-      - /opt/test-config/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - /opt/test-config/elasticsearch/config/jvm.options:/usr/share/elasticsearch/config/jvm.options
-      - /opt/test-config/elasticsearch/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      - /home/winston_hsieh/Git/onap/aai/test-config/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - /home/winston_hsieh/Git/onap/aai/test-config/elasticsearch/config/jvm.options:/usr/share/elasticsearch/config/jvm.options
+      - /home/winston_hsieh/Git/onap/aai/test-config/elasticsearch/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      - /home/winston_hsieh/Git/onap/aai/test-config/elasticsearch/config/sysctl.conf:/etc/sysctl.conf
       - es-data:/usr/share/elasticsearch/data
     logging:
       driver: "json-file"
