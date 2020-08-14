@@ -1,0 +1,321 @@
+version: '2'
+services:
+  aai-resources.api.simpledemo.onap.org:
+    image: ${DOCKER_REGISTRY}/onap/aai-resources:${RESOURCES_DOCKER_IMAGE_VERSION}
+    hostname: aai-resources.api.simpledemo.onap.org
+    environment:
+      - LOCAL_USER_ID=${USER_ID}
+      - LOCAL_GROUP_ID=${GROUP_ID}
+    ports:
+      - 8447:8447
+    volumes:
+      - ${RESOURCES_LOGS}:/opt/aai/logroot/AAI-RES
+      - ./aai-resources/appconfig/janusgraph-realtime.properties:/opt/app/aai-resources/resources/etc/appprops/janusgraph-realtime.properties
+      - ./aai-resources/appconfig/janusgraph-cached.properties:/opt/app/aai-resources/resources/etc/appprops/janusgraph-cached.properties
+      - ./aai-resources/appconfig/aaiconfig.properties:/opt/app/aai-resources/resources/etc/appprops/aaiconfig.properties
+      - ./aai-resources/appconfig/application.properties:/opt/app/aai-resources/resources/application.properties
+      - ./aai-resources/appconfig/logback.xml:/opt/app/aai-resources/resources/logback.xml
+      - ./aai-resources/appconfig/localhost-access-logback.xml:/opt/app/aai-resources/resources/localhost-access-logback.xml
+      - ./aai-resources/appconfig/aai_keystore:/opt/app/aai-resources/resources/etc/auth/aai_keystore
+      - ./aai-resources/appconfig/realm.properties:/opt/app/aai-resources/resources/etc/auth/realm.properties
+      - ./aai-resources/appconfig/aaf/cadi.properties:/opt/app/aai-resources/resources/cadi.properties
+      - ./aai-resources/appconfig/aaf/org.onap.aai.keyfile:/opt/app/aai-resources/resources/aaf/org.onap.aai.keyfile
+      - ./aai-resources/appconfig/aaf/org.onap.aai.p12:/opt/app/aai-resources/resources/aaf/org.onap.aai.p12
+      - ./aai-resources/appconfig/aaf/org.onap.aai.props:/opt/app/aai-resources/resources/aaf/org.onap.aai.props
+      - ./aai-resources/appconfig/aaf/org.osaaf.location.props:/opt/app/aai-resources/resources/aaf/org.osaaf.location.props
+      - ./aai-resources/appconfig/aaf/permissions.properties:/opt/app/aai-resources/resources/aaf/permissions.properties
+      - ./aai-resources/appconfig/aaf/truststoreONAPall.jks:/opt/app/aai-resources/resources/aaf/truststoreONAPall.jks
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+  aai-traversal.api.simpledemo.onap.org:
+    image: ${DOCKER_REGISTRY}/onap/aai-traversal:${TRAVERSAL_DOCKER_IMAGE_VERSION}
+    hostname: aai-traversal.api.simpledemo.onap.org
+    environment:
+      - LOCAL_USER_ID=${USER_ID}
+      - LOCAL_GROUP_ID=${GROUP_ID}
+      - DISABLE_UPDATE_QUERY=true
+    volumes:
+      - ${TRAVERSAL_LOGS}:/opt/aai/logroot/AAI-GQ
+      - ./aai-traversal/appconfig/janusgraph-realtime.properties:/opt/app/aai-traversal/resources/etc/appprops/janusgraph-realtime.properties
+      - ./aai-traversal/appconfig/janusgraph-cached.properties:/opt/app/aai-traversal/resources/etc/appprops/janusgraph-cached.properties
+      - ./aai-traversal/appconfig/aaiconfig.properties:/opt/app/aai-traversal/resources/etc/appprops/aaiconfig.properties
+      - ./aai-traversal/appconfig/application.properties:/opt/app/aai-traversal/resources/application.properties
+      - ./aai-traversal/appconfig/logback.xml:/opt/app/aai-traversal/resources/logback.xml
+      - ./aai-traversal/appconfig/localhost-access-logback.xml:/opt/app/aai-traversal/resources/localhost-access-logback.xml
+      - ./aai-traversal/appconfig/aai_keystore:/opt/app/aai-traversal/resources/etc/auth/aai_keystore
+      - ./aai-traversal/appconfig/realm.properties:/opt/app/aai-traversal/resources/etc/auth/realm.properties
+      - ./aai-traversal/appconfig/aaf/cadi.properties:/opt/app/aai-traversal/resources/cadi.properties
+      - ./aai-traversal/appconfig/aaf/org.onap.aai.keyfile:/opt/app/aai-traversal/resources/aaf/org.onap.aai.keyfile
+      - ./aai-traversal/appconfig/aaf/org.onap.aai.p12:/opt/app/aai-traversal/resources/aaf/org.onap.aai.p12
+      - ./aai-traversal/appconfig/aaf/org.onap.aai.props:/opt/app/aai-traversal/resources/aaf/org.onap.aai.props
+      - ./aai-traversal/appconfig/aaf/org.osaaf.location.props:/opt/app/aai-traversal/resources/aaf/org.osaaf.location.props
+      - ./aai-traversal/appconfig/aaf/permissions.properties:/opt/app/aai-traversal/resources/aaf/permissions.properties
+      - ./aai-traversal/appconfig/aaf/truststoreONAPall.jks:/opt/app/aai-traversal/resources/aaf/truststoreONAPall.jks
+    ports:
+      - 8446:8446
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+  aai-graphadmin.api.simpledemo.onap.org:
+    image: ${DOCKER_REGISTRY}/onap/aai-graphadmin:${GRAPHADMIN_DOCKER_IMAGE_VERSION}
+    hostname: aai-graphadmin.api.simpledemo.onap.org
+    environment:
+      - LOCAL_USER_ID=${USER_ID}
+      - LOCAL_GROUP_ID=${GROUP_ID}
+    volumes:
+      - ${GRAPHADMIN_LOGS}:/opt/aai/logroot/AAI-GA
+      - ./aai-graphadmin/appconfig/janusgraph-realtime.properties:/opt/app/aai-graphadmin/resources/etc/appprops/janusgraph-realtime.properties
+      - ./aai-graphadmin/appconfig/janusgraph-cached.properties:/opt/app/aai-graphadmin/resources/etc/appprops/janusgraph-cached.properties
+      - ./aai-graphadmin/appconfig/aaiconfig.properties:/opt/app/aai-graphadmin/resources/etc/appprops/aaiconfig.properties
+      - ./aai-graphadmin/appconfig/application.properties:/opt/app/aai-graphadmin/resources/application.properties
+      - ./aai-graphadmin/appconfig/logback.xml:/opt/app/aai-graphadmin/resources/logback.xml
+      - ./aai-graphadmin/appconfig/localhost-access-logback.xml:/opt/app/aai-graphadmin/resources/localhost-access-logback.xml
+      - ./aai-graphadmin/appconfig/aai_keystore:/opt/app/aai-graphadmin/resources/etc/auth/aai_keystore
+      - ./aai-graphadmin/appconfig/realm.properties:/opt/app/aai-graphadmin/resources/etc/auth/realm.properties
+    ports:
+      - 8449:8449
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+  aai.api.simpledemo.onap.org:
+    image: ${AAI_HAPROXY_IMAGE}:${AAI_HAPROXY_VERSION}
+    hostname: aai.api.simpledemo.onap.org
+    ports:
+      - 8443:8443
+    links:
+      - aai-resources.api.simpledemo.onap.org
+      - aai-traversal.api.simpledemo.onap.org
+    volumes:
+      - ${AAI_HAPROXY_LOGS}:/dev/log
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ./haproxy/aai.pem:/etc/ssl/private/aai.pem
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+  aai.searchservice.simpledemo.openecomp.org:
+    image: ${DOCKER_REGISTRY}/onap/search-data-service:${SEARCH_DATA_SERVICE_DOCKER_IMAGE_VERSION}
+    hostname: aai.searchservice.simpledemo.openecomp.org
+    volumes:
+      - ${SEARCH_LOGS}:/logs
+      - ./search-data-service/appconfig:/opt/app/search-data-service/config
+    ports:
+      - 9509:9509
+    environment:
+      - CONFIG_HOME=/opt/app/search-data-service/config/
+      - KEY_STORE_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - KEY_MANAGER_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+  datarouter:
+    image: ${DOCKER_REGISTRY}/onap/data-router:${DATA_ROUTER_DOCKER_IMAGE_VERSION}
+    hostname: data-router
+    volumes:
+      - ${DATA_ROUTER_LOGS}:/logs
+      - ./data-router/appconfig:/opt/app/data-router/config
+      - ./data-router/dynamic:/opt/app/data-router/dynamic
+    ports:
+      - 9502:9502
+    environment:
+      - CONFIG_HOME=/opt/app/data-router/config/
+      - KEY_STORE_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - KEY_MANAGER_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - DYNAMIC_ROUTES=/opt/app/data-router/dynamic/routes
+      - SERVICE_BEANS=/opt/app/data-router/dynamic/conf
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+  model-loader:
+    image: ${DOCKER_REGISTRY}/onap/model-loader:${MODEL_LOADER_DOCKER_IMAGE_VERSION}
+    hostname: model-loader
+    volumes:
+      - ${MODEL_LOADER_LOGS}:/logs
+      - ./model-loader/appconfig:/opt/app/model-loader/config
+    environment:
+      - CONFIG_HOME=/opt/app/model-loader/config/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+  sparky-be:
+    image: ${DOCKER_REGISTRY}/onap/sparky-be:${SPARKY_BE_DOCKER_IMAGE_VERSION}
+    hostname: sparky-be
+    volumes:
+      - ${UI_LOGS}:/logs
+      - ./sparky/appconfig/auth:/opt/app/sparky/config/auth
+      - ./sparky/appconfig/portal:/opt/app/sparky/config/portal
+      - ./sparky/appconfig/application.properties:/opt/app/sparky/config/application.properties
+      - ./sparky/appconfig/application-oxm-default.properties:/opt/app/sparky/config/application-oxm-default.properties
+      - ./sparky/appconfig/application-oxm-schema-prod.properties:/opt/app/sparky/config/application-oxm-schema-prod.properties
+      - ./sparky/appconfig/application-resources.properties:/opt/app/sparky/config/application-resources.properties
+      - ./sparky/appconfig/application-ssl.properties:/opt/app/sparky/config/application-ssl.properties
+      - ./sparky/appconfig/users.config:/opt/app/sparky/config/users.config
+      - ./sparky/appconfig/roles.config:/opt/app/sparky/config/roles.config
+
+    ports:
+      - 9517:9517
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+  champ-service:
+    image: ${DOCKER_REGISTRY}/onap/champ:${CHAMP_DOCKER_IMAGE_VERSION}
+    hostname: champ-service
+    volumes:
+      - ${CHAMP_LOGS}:/logs
+      - ./champ-service/logging/logback.xml:/opt/app/champ-service/bundleconfig/etc/logback.xml
+      - ./champ-service/appconfig:/opt/app/champ-service/config
+      - ./champ-service/dynamic:/opt/app/champ-service/dynamic
+    ports:
+      - 9522:9522
+    environment:
+      - CONFIG_HOME=/opt/app/champ-service/config/
+      - KEY_STORE_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - KEY_MANAGER_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - AJSC_JETTY_ThreadCount_MIN=5
+      - AJSC_JETTY_ThreadCount_MAX=200
+      - AJSC_JETTY_BLOCKING_QUEUE_SIZE=200
+      - MAX_HEAP=1024
+      - SERVICE_BEANS=/opt/app/champ-service/dynamic/conf
+      - GRAPHIMPL=janus-deps
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+  crud-service:
+    image: ${DOCKER_REGISTRY}/onap/gizmo:${GIZMO_DOCKER_IMAGE_VERSION}
+    hostname: crud-service
+    volumes:
+      - ${CRUD_LOGS}:/logs
+      - ./crud-service/appconfig:/opt/app/crud-service/config
+      - ./crud-service/dynamic:/opt/app/crud-service/dynamic
+    ports:
+      - 9520:9520
+    environment:
+      - CONFIG_HOME=/opt/app/crud-service/config/
+      - KEY_STORE_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - KEY_MANAGER_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - AJSC_JETTY_ThreadCount_MIN=5
+      - AJSC_JETTY_ThreadCount_MAX=200
+      - AJSC_JETTY_BLOCKING_QUEUE_SIZE=200
+      - MAX_HEAP=1024
+      - SERVICE_BEANS=/opt/app/crud-service/dynamic/conf
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+        
+  spike-service:
+    image: ${DOCKER_REGISTRY}/onap/spike:${SPIKE_DOCKER_IMAGE_VERSION}
+    hostname: spike-service
+    volumes:
+      - ${SPIKE_LOGS}:/logs
+      - ./spike-service/appconfig:/opt/app/spike-service/config
+      - ./spike-service/dynamic:/opt/app/spike-service/dynamic
+    ports:
+      - 9518:9518
+    environment:
+      - CONFIG_HOME=/opt/app/spike-service/config/
+      - KEY_STORE_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - KEY_MANAGER_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - AJSC_JETTY_ThreadCount_MIN=5
+      - AJSC_JETTY_ThreadCount_MAX=200
+      - AJSC_JETTY_BLOCKING_QUEUE_SIZE=200
+      - MAX_HEAP=1024
+      - SERVICE_BEANS=/opt/app/spike-service/dynamic/conf
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+  babel:
+    image: ${DOCKER_REGISTRY}/onap/babel:${BABEL_DOCKER_IMAGE_VERSION}
+    hostname: babel
+    volumes:
+      - ${BABEL_LOGS}:/opt/app/babel/logs/AAI-BAS
+      - ./babel/appconfig:/opt/app/babel/config      
+    ports:
+      - 9516:9516
+    environment:
+      - CONFIG_HOME=/opt/app/babel/config/
+      - KEY_STORE_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+      - KEY_MANAGER_PASSWORD=OBF:1y0q1uvc1uum1uvg1pil1pjl1uuq1uvk1uuu1y10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+  
+  aai.hbase.simpledemo.onap.org:
+    image: cassandra:2.1
+    hostname: aai.hbase.simpledemo.onap.org
+    privileged: true
+    ports:
+      - 7000:7000
+      - 7001:7001
+      - 7199:7199
+      - 9042:9042
+      - 9160:9160
+    network_mode: "host"
+    environment:
+      - CASSANDRA_SEEDS=127.0.0.1
+      - CASSANDRA_DC=Heat
+      - CASSANDRA_RACK=Rack1
+      - CASSANDRA_AUTO_BOOTSTRAP=true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+  aai.elasticsearch.simpledemo.openecomp.org:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.2
+    hostname: aai.elasticsearch.simpledemo.openecomp.org
+    container_name: elasticsearch
+    privileged: true
+    ports:
+      - "9200:9200"
+    network_mode: "host"
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch/config/jvm.options:/usr/share/elasticsearch/config/jvm.options
+      - ./elasticsearch/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      - ./elasticsearch/config/sysctl.conf:/etc/sysctl.conf
+      - es-data:/usr/share/elasticsearch/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: ${MTU}
+
+volumes:
+  es-data:
