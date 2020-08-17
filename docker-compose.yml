@@ -313,7 +313,7 @@ services:
     hostname: aai-elasticsearch
     domainname: simpledemo.onap.org
     container_name: aai-elasticsearch
-    # privileged: true
+    privileged: true
     ports:
       - "9200:9200"
     # network_mode: "host"
