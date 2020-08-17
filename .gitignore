@@ -3,4 +3,4 @@ testsuite/robot/library/**
 .project
 */.pydevproject
 *.log
-
+*.log.*

@@ -1,8 +1,9 @@
 version: '2'
 services:
-  aai-resources.api.simpledemo.onap.org:
+  aai-resources:
     image: ${DOCKER_REGISTRY}/onap/aai-resources:${RESOURCES_DOCKER_IMAGE_VERSION}
-    hostname: aai-resources.api.simpledemo.onap.org
+    hostname: aai-resources
+    domainname: api.simpledemo.onap.org
     environment:
       - LOCAL_USER_ID=${USER_ID}
       - LOCAL_GROUP_ID=${GROUP_ID}
@@ -25,14 +26,18 @@ services:
       - ./aai-resources/appconfig/aaf/org.osaaf.location.props:/opt/app/aai-resources/resources/aaf/org.osaaf.location.props
       - ./aai-resources/appconfig/aaf/permissions.properties:/opt/app/aai-resources/resources/aaf/permissions.properties
       - ./aai-resources/appconfig/aaf/truststoreONAPall.jks:/opt/app/aai-resources/resources/aaf/truststoreONAPall.jks
+    links: 
+      - aai-elasticsearch
+      - aai-hbase
     logging:
       driver: "json-file"
       options:
         max-size: "30m"
         max-file: "5"
-  aai-traversal.api.simpledemo.onap.org:
+  aai-traversal:
     image: ${DOCKER_REGISTRY}/onap/aai-traversal:${TRAVERSAL_DOCKER_IMAGE_VERSION}
-    hostname: aai-traversal.api.simpledemo.onap.org
+    hostname: aai-traversal
+    domainname: api.simpledemo.onap.org
     environment:
       - LOCAL_USER_ID=${USER_ID}
       - LOCAL_GROUP_ID=${GROUP_ID}
@@ -56,14 +61,18 @@ services:
       - ./aai-traversal/appconfig/aaf/truststoreONAPall.jks:/opt/app/aai-traversal/resources/aaf/truststoreONAPall.jks
     ports:
       - 8446:8446
+    links: 
+      - aai-elasticsearch
+      - aai-hbase
     logging:
       driver: "json-file"
       options:
         max-size: "30m"
         max-file: "5"
-  aai-graphadmin.api.simpledemo.onap.org:
+  aai-graphadmin:
     image: ${DOCKER_REGISTRY}/onap/aai-graphadmin:${GRAPHADMIN_DOCKER_IMAGE_VERSION}
-    hostname: aai-graphadmin.api.simpledemo.onap.org
+    hostname: aai-graphadmin
+    domainname: api.simpledemo.onap.org
     environment:
       - LOCAL_USER_ID=${USER_ID}
       - LOCAL_GROUP_ID=${GROUP_ID}
@@ -79,19 +88,24 @@ services:
       - ./aai-graphadmin/appconfig/realm.properties:/opt/app/aai-graphadmin/resources/etc/auth/realm.properties
     ports:
       - 8449:8449
+    links: 
+      - aai-elasticsearch
+      - aai-hbase
     logging:
       driver: "json-file"
       options:
         max-size: "30m"
         max-file: "5"
-  aai.api.simpledemo.onap.org:
+  aai:
     image: ${AAI_HAPROXY_IMAGE}:${AAI_HAPROXY_VERSION}
-    hostname: aai.api.simpledemo.onap.org
+    hostname: aai
+    domainname: api.simpledemo.onap.org
     ports:
       - 8443:8443
     links:
-      - aai-resources.api.simpledemo.onap.org
-      - aai-traversal.api.simpledemo.onap.org
+      - aai-resources
+      - aai-traversal
+      - aai-graphadmin
     volumes:
       - ${AAI_HAPROXY_LOGS}:/dev/log
       - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
@@ -102,9 +116,10 @@ services:
         max-size: "30m"
         max-file: "5"
 
-  aai.searchservice.simpledemo.openecomp.org:
+  aai-searchservice:
     image: ${DOCKER_REGISTRY}/onap/search-data-service:${SEARCH_DATA_SERVICE_DOCKER_IMAGE_VERSION}
-    hostname: aai.searchservice.simpledemo.openecomp.org
+    hostname: aai-searchservice
+    domainname: simpledemo.openecomp.org
     volumes:
       - ${SEARCH_LOGS}:/logs
       - ./search-data-service/appconfig:/opt/app/search-data-service/config
@@ -169,7 +184,6 @@ services:
       - ./sparky/appconfig/application-ssl.properties:/opt/app/sparky/config/application-ssl.properties
       - ./sparky/appconfig/users.config:/opt/app/sparky/config/users.config
       - ./sparky/appconfig/roles.config:/opt/app/sparky/config/roles.config
-
     ports:
       - 9517:9517
     logging:
@@ -270,19 +284,21 @@ services:
         max-size: "30m"
         max-file: "5"
   
-  aai.hbase.simpledemo.onap.org:
+  aai-hbase:
     image: cassandra:2.1
-    hostname: aai.hbase.simpledemo.onap.org
-    privileged: true
+    hostname: aai-hbase
+    domainname: simpledemo.onap.org
+    container_name: aai-hbase
+    # privileged: true
     ports:
       - 7000:7000
       - 7001:7001
       - 7199:7199
       - 9042:9042
       - 9160:9160
-    network_mode: "host"
+    # network_mode: "host"
     environment:
-      - CASSANDRA_SEEDS=127.0.0.1
+      - CASSANDRA_SEEDS=aai-hbase
       - CASSANDRA_DC=Heat
       - CASSANDRA_RACK=Rack1
       - CASSANDRA_AUTO_BOOTSTRAP=true
@@ -291,14 +307,16 @@ services:
       options:
         max-size: "30m"
         max-file: "5"
-  aai.elasticsearch.simpledemo.openecomp.org:
+
+  aai-elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.1.2
-    hostname: aai.elasticsearch.simpledemo.openecomp.org
-    container_name: elasticsearch
-    privileged: true
+    hostname: aai-elasticsearch
+    domainname: simpledemo.onap.org
+    container_name: aai-elasticsearch
+    # privileged: true
     ports:
       - "9200:9200"
-    network_mode: "host"
+    # network_mode: "host"
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./elasticsearch/config/jvm.options:/usr/share/elasticsearch/config/jvm.options
